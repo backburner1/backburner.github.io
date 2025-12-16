@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backburner Server</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;font-family:'Inter',sans-serif}
+body{
+margin:0;
+height:100vh;
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+display:flex;
+overflow:hidden;
+transition:.4s;
+}
+.dark{background:#0f172a}
+
+/* ================= WELCOME ================= */
+#welcome{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle at top,#6366f1,#312e81);
+z-index:999;
+color:#fff;
+animation:fadeOut 1s ease forwards;
+animation-delay:3s;
+}
+
+.welcome-box{
+text-align:center;
+padding:40px;
+}
+
+.welcome-line{
+display:block;
+font-size:34px;
+font-weight:700;
+letter-spacing:3px;
+opacity:0;
+filter:blur(10px);
+animation:reveal .9s ease forwards;
+}
+
+.welcome-line:nth-child(1){animation-delay:.4s}
+.welcome-line:nth-child(2){animation-delay:1.3s}
+
+@keyframes reveal{
+to{opacity:1;transform:translateY(0);filter:blur(0)}
+from{opacity:0;transform:translateY(30px);filter:blur(10px)}
+}
+
+@keyframes fadeOut{
+to{opacity:0;visibility:hidden}
+}
+
+/* ================= LOGIN ================= */
+#login{
+position:fixed;
+inset:0;
+display:none; /* Default hidden, muncul via script */
+align-items:center;
+justify-content:center;
+backdrop-filter:blur(20px);
+z-index: 100; /* Supaya di atas elemen lain */
+}
+.login-box{
+background:rgba(255,255,255,.15);
+padding:30px;
+border-radius:24px;
+width:320px;
+color:#fff;
+box-shadow:0 30px 70px rgba(0,0,0,.35);
+}
+.login-box h2{text-align:center}
+select,input,button{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:14px;
+border:none;
+outline:none;
+}
+button{
+background:#fff;
+color:#4f46e5;
+font-weight:600;
+cursor:pointer;
+transition: 0.2s;
+}
+button:active{
+transform: scale(0.95);
+}
+
+/* ================= APP ================= */
+#app{display:none;width:100%}
+
+/* SIDEBAR */
+.sidebar{
+width:260px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(18px);
+padding:20px;
+color:#fff;
+transition:.4s;
+}
+.sidebar.collapsed{width:90px}
+
+.avatar{
+width:64px;height:64px;
+border-radius:50%;
+background:linear-gradient(135deg,#fff,#e5e7eb);
+color:#4f46e5;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+font-weight:700;
+margin:auto;
+box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+.username{text-align:center;margin-top:12px;font-weight:600}
+
+.menu button{
+background:rgba(255,255,255,.15);
+color:#fff;
+border:none;
+margin:8px 0;
+padding:14px;
+border-radius:16px;
+cursor:pointer;
+transition:.3s;
+}
+.menu button:hover{
+background:rgba(255,255,255,.3);
+transform:translateX(6px);
+}
+
+/* MAIN */
+.main{
+flex:1;
+padding:30px;
+background:#f8fafc;
+overflow:auto;
+border-top-left-radius:40px;
+}
+.dark .main{background:#020617;color:#fff}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:20px;
+}
+.card{
+background:#fff;
+padding:22px;
+border-radius:24px;
+box-shadow:0 15px 40px rgba(0,0,0,.12);
+}
+.dark .card{background:#020617;border:1px solid #1e293b}
+
+.hidden{display:none}
+
+textarea{
+width:100%;
+height:220px;
+border-radius:18px;
+padding:16px;
+border:1px solid #ccc;
+font-family: monospace;
+}
+</style>
+</head>
+
+<body>
+
+<div id="welcome">
+  <div class="welcome-box">
+    <span class="welcome-line">Welcome to</span>
+    <span class="welcome-line">Server Coding Nicolas</span>
+  </div>
+</div>
+
+<div id="login">
+  <div class="login-box">
+    <h2>Backburner Login</h2>
+    <select id="userInput">
+      <option>Nicolas Tok</option>
+      <option>clairine</option>
+      <option>wixander</option>
+      <option>angel</option>
+    </select>
+    <input type="password" id="passInput" placeholder="Password">
+    <button onclick="handleLogin()">Masuk</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="sidebar" id="sidebar">
+    <div class="avatar" id="ava">N</div>
+    <div class="username" id="uname"></div>
+    <div class="menu">
+      <button onclick="show('dash')">Dashboard</button>
+      <button onclick="show('editor')">Code Editor</button>
+      <button onclick="show('upload')">Upload File</button>
+      <button onclick="show('profile')">Profile</button>
+      <button onclick="toggle()">Collapse</button>
+      <button onclick="theme()">Dark / Light</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="dash">
+      <h1>Dashboard</h1>
+      <div class="cards">
+        <div class="card">📁 Project: 12</div>
+        <div class="card">🔥 Active Session</div>
+        <div class="card">💾 Storage Ready</div>
+      </div>
+    </div>
+
+    <div id="editor" class="hidden">
+      <h1>Code Editor</h1>
+      <textarea placeholder="// tulis kode di sini"></textarea>
+    </div>
+
+    <div id="upload" class="hidden">
+      <h1>Upload Coding File</h1>
+      <input type="file">
+    </div>
+
+    <div id="profile" class="hidden">
+      <h1>Edit Profile</h1>
+      <input placeholder="Nama">
+      <input placeholder="Password Baru">
+      <button>Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. Munculkan form login setelah animasi welcome selesai (3.2 detik)
+  setTimeout(()=>{
+    document.getElementById("login").style.display="flex";
+  }, 3200);
+
+  const users = {
+    "Nicolas Tok": "ber217an",
+    "clairine": "backburner",
+    "wixander": "backburner",
+    "angel": "backburner"
+  };
+
+  // 2. Nama fungsi diganti 'handleLogin' agar tidak bentrok dengan ID="login"
+  function handleLogin(){
+    const userVal = document.getElementById("userInput").value;
+    const passVal = document.getElementById("passInput").value;
+    
+    if(users[userVal] === passVal){
+      // 3. Logic Benar: Sembunyikan Login, Tampilkan App
+      document.getElementById("login").style.display = "none";
+      document.getElementById("app").style.display = "flex";
+      
+      // Update UI
+      document.getElementById("uname").innerText = userVal;
+      document.getElementById("ava").innerText = userVal[0];
+    } else {
+      alert("Password salah");
+    }
+  }
+
+  function show(id){
+    ["dash","editor","upload","profile"].forEach(x=>{
+      document.getElementById(x).classList.add("hidden");
+    });
+    document.getElementById(id).classList.remove("hidden");
+  }
+
+  function toggle(){
+    document.getElementById("sidebar").classList.toggle("collapsed");
+  }
+
+  function theme(){
+    document.body.classList.toggle("dark");
+  }
+</script>
+
+</body>
+</html>

@@ -2,232 +2,106 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nicolas Server</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box;font-family:'Inter',sans-serif}
-
-/* ================= BASE ================= */
 body{
 margin:0;height:100vh;
-display:flex;
 background:linear-gradient(135deg,#6366f1,#8b5cf6);
 overflow:hidden;
 }
-
 .hidden{display:none}
 
-/* ================= ANIM ================= */
-.fade{
-animation:fade .5s ease;
-}
-.slide{
-animation:slide .6s cubic-bezier(.4,0,.2,1);
-}
-.pop{
-animation:pop .4s ease;
-}
-
-@keyframes fade{
-from{opacity:0}
-to{opacity:1}
-}
-@keyframes slide{
-from{opacity:0;transform:translateY(30px)}
-to{opacity:1;transform:translateY(0)}
-}
-@keyframes pop{
-from{opacity:0;transform:scale(.9)}
-to{opacity:1;transform:scale(1)}
-}
-
-/* ================= WELCOME ================= */
+/* WELCOME */
 #welcome{
 position:fixed;inset:0;
 display:flex;align-items:center;justify-content:center;
 background:radial-gradient(circle at top,#6366f1,#312e81);
 color:#fff;z-index:999;
-animation:fade 1s ease forwards;
+animation:fadeOut 1s ease forwards;
+animation-delay:2.5s;
 }
-#welcome h1{
-font-size:38px;
-letter-spacing:2px;
-animation:slide 1.2s ease;
-}
+#welcome h1{font-size:34px;letter-spacing:3px}
 
-/* ================= LOGIN ================= */
+/* LOGIN */
 #login{
 position:fixed;inset:0;
 display:flex;align-items:center;justify-content:center;
-backdrop-filter:blur(20px);
+backdrop-filter:blur(18px);
 background:rgba(15,23,42,.45);
-z-index:100;
+z-index:500;
 }
 .login-box{
-width:340px;
-padding:36px;
-border-radius:28px;
-background:rgba(255,255,255,.16);
-box-shadow:0 40px 90px rgba(0,0,0,.35);
+width:320px;padding:30px;
+border-radius:26px;
+background:rgba(255,255,255,.15);
+box-shadow:0 30px 80px rgba(0,0,0,.4);
 color:#fff;
-animation:pop .7s ease;
+animation:pop .5s ease;
 }
-.login-box h2{
-text-align:center;
-margin-bottom:22px;
-}
-.login-box select,
-.login-box input{
-width:100%;
-padding:14px;
-margin:10px 0;
-border-radius:16px;
-border:none;
-outline:none;
+.login-box h2{text-align:center}
+.login-box select,.login-box input,.login-box button{
+width:100%;padding:12px;margin:10px 0;
+border:none;border-radius:14px;
 }
 .login-box button{
-width:100%;
-padding:14px;
-border-radius:16px;
-border:none;
-background:#fff;
-color:#4f46e5;
-font-weight:700;
-cursor:pointer;
-transition:.25s;
-}
-.login-box button:hover{
-transform:translateY(-2px);
-box-shadow:0 12px 30px rgba(0,0,0,.2);
-}
-.login-box button:active{
-transform:scale(.95);
+background:#fff;color:#4f46e5;font-weight:600;cursor:pointer;
 }
 
-/* ================= APP ================= */
-#app{display:none;width:100%}
-
-/* SIDEBAR */
+/* APP */
+#app{display:flex;height:100%}
 .sidebar{
-width:260px;
-background:rgba(255,255,255,.14);
-backdrop-filter:blur(18px);
-padding:20px;
+width:260px;padding:20px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(16px);
 color:#fff;
-animation:slide .6s ease;
 }
-.sidebar button{
-width:100%;
-margin:8px 0;
-padding:14px;
-border-radius:18px;
-border:none;
+.avatar{
+width:64px;height:64px;border-radius:50%;
+background:#fff;color:#4f46e5;
+display:flex;align-items:center;justify-content:center;
+font-size:26px;font-weight:700;margin:auto;
+}
+.username{text-align:center;margin:12px 0}
+.menu button{
+width:100%;padding:14px;margin:8px 0;
+border:none;border-radius:16px;
 background:rgba(255,255,255,.18);
-color:#fff;
-cursor:pointer;
+color:#fff;cursor:pointer;
 transition:.3s;
 }
-.sidebar button:hover{
-background:rgba(255,255,255,.3);
-transform:translateX(6px);
-}
+.menu button:hover{background:rgba(255,255,255,.3);transform:translateX(6px)}
 
-/* MAIN */
 .main{
-flex:1;
+flex:1;padding:30px;
 background:#f8fafc;
-padding:30px;
-border-top-left-radius:40px;
 overflow:auto;
-animation:fade .6s ease;
+border-top-left-radius:40px;
 }
-
-/* ================= CONTENT ================= */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
-
 .card{
-background:#fff;
-padding:20px;
-border-radius:22px;
-box-shadow:0 20px 40px rgba(0,0,0,.12);
-cursor:pointer;
-animation:slide .6s ease;
-transition:.3s;
+background:#fff;padding:20px;
+border-radius:24px;
+box-shadow:0 15px 40px rgba(0,0,0,.12);
+margin-bottom:20px;
+animation:pop .4s ease;
 }
-.card:hover{
-transform:translateY(-6px);
-box-shadow:0 30px 60px rgba(0,0,0,.2);
-}
+textarea,input{width:100%;padding:12px;border-radius:14px;margin:8px 0}
+pre{background:#020617;color:#fff;padding:14px;border-radius:14px;overflow:auto}
 
-textarea{
-width:100%;
-height:300px;
-border-radius:20px;
-padding:18px;
-font-family:monospace;
-border:1px solid #ddd;
-transition:.2s;
-}
-textarea:focus{
-outline:none;
-border-color:#6366f1;
-box-shadow:0 0 0 4px rgba(99,102,241,.2);
-}
-
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:12px;
-flex-wrap:wrap;
-}
-.tab{
-padding:10px 16px;
-border-radius:14px;
-background:#e5e7eb;
-cursor:pointer;
-transition:.25s;
-}
-.tab.active{
-background:#6366f1;
-color:#fff;
-transform:scale(1.05);
-}
-
-.actions{
-display:flex;
-gap:12px;
-margin-top:14px;
-flex-wrap:wrap;
-}
-.actions button{
-padding:12px 18px;
-border-radius:14px;
-border:none;
-cursor:pointer;
-background:#6366f1;
-color:#fff;
-transition:.25s;
-}
-.actions button:hover{
-transform:translateY(-2px);
-box-shadow:0 12px 28px rgba(99,102,241,.4);
-}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1}}
+@keyframes fadeOut{to{opacity:0;visibility:hidden}}
 </style>
 </head>
 
 <body>
 
 <!-- WELCOME -->
-<div id="welcome">
-  <h1>Welcome to Nicolas Server</h1>
-</div>
+<div id="welcome"><h1>Welcome to Nicolas Server</h1></div>
 
 <!-- LOGIN -->
 <div id="login">
@@ -240,206 +114,151 @@ box-shadow:0 12px 28px rgba(99,102,241,.4);
       <option>angel</option>
     </select>
     <input id="passInput" type="password" placeholder="Password">
-    <button onclick="handleLogin()">Masuk</button>
+    <button onclick="login()">Masuk</button>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app">
-  <div class="sidebar" id="menu"></div>
+<div id="app" class="hidden">
+  <div class="sidebar">
+    <div class="avatar" id="ava"></div>
+    <div class="username" id="uname"></div>
+    <div class="menu" id="menu"></div>
+  </div>
 
-  <div class="main fade">
-    <div id="home">
-      <h1>Beranda Materi Nicolas</h1>
-      <div class="grid" id="homeList"></div>
-    </div>
+  <div class="main">
+    <div id="home"></div>
 
     <div id="editor" class="hidden">
-      <h1>Code Editor</h1>
-      <div class="tabs" id="tabs"></div>
+      <h2>Upload Materi (Admin)</h2>
+      <input id="fileName" placeholder="Nama File">
       <textarea id="codeArea"></textarea>
-      <div class="actions">
-        <button onclick="newFile()">New</button>
-        <button onclick="saveFile()">Save</button>
-        <button onclick="renameFile()">Rename</button>
-        <button onclick="deleteFile()">Delete</button>
-      </div>
+      <button onclick="uploadMateri()">Upload ke Beranda</button>
     </div>
 
     <div id="submit" class="hidden">
-      <h1>Kumpul Tugas</h1>
-      <input id="taskName" placeholder="Nama File">
+      <h2>Kumpul Tugas</h2>
+      <input id="taskTitle" placeholder="Judul Tugas">
       <textarea id="taskCode"></textarea>
-      <button onclick="submitTask()">Kumpulkan</button>
+      <button onclick="submitTask()">Kirim</button>
     </div>
 
     <div id="tasks" class="hidden">
-      <h1>Dashboard Tugas</h1>
-      <div class="grid" id="taskList"></div>
-    </div>
-
-    <div id="password" class="hidden">
-      <h1>Ganti Password</h1>
-      <div id="adminPass" class="hidden">
-        <select id="targetUser"></select>
-        <input id="newPassAdmin" placeholder="Password Baru">
-        <button onclick="changeUserPass()">Simpan</button>
-      </div>
-      <input id="oldPass" type="password" placeholder="Password Lama">
-      <input id="newPassSelf" type="password" placeholder="Password Baru">
-      <button onclick="changeMyPass()">Ganti</button>
+      <h2>Tugas Masuk</h2>
+      <div id="taskList"></div>
     </div>
   </div>
 </div>
 
 <script>
-/* WELCOME */
-setTimeout(()=>welcome.style.display="none",2500);
-
-/* DATA */
-const defaultUsers={
-"Nicolas Tok":{pass:"ber217an",role:"admin"},
-"clairine":{pass:"backburner",role:"user"},
-"wixander":{pass:"backburner",role:"user"},
-"angel":{pass:"backburner",role:"user"}
+/* ================= ENV (SIMULASI) ================= */
+window.ENV={
+  SUPABASE_URL:"https://YOUR_PROJECT_ID.supabase.co",
+  SUPABASE_ANON_KEY:"YOUR_PUBLIC_ANON_KEY"
 };
 
-let users=JSON.parse(localStorage.getItem("users"))||defaultUsers;
-localStorage.setItem("users",JSON.stringify(users));
+/* ================= SUPABASE ================= */
+const supabase = supabaseJs.createClient(
+  ENV.SUPABASE_URL,
+  ENV.SUPABASE_ANON_KEY
+);
+
+/* ================= USER STATIC (DEMO) ================= */
+const users={
+  "Nicolas Tok":{pass:"ber217an",role:"admin"},
+  "clairine":{pass:"backburner",role:"user"},
+  "wixander":{pass:"backburner",role:"user"},
+  "angel":{pass:"backburner",role:"user"}
+};
 
 let currentUser=null;
-let files=JSON.parse(localStorage.getItem("files"))||{};
-let tasks=JSON.parse(localStorage.getItem("tasks"))||{};
-let currentFile=null;
 
-/* LOGIN */
-function handleLogin(){
-if(users[userInput.value]?.pass===passInput.value){
-currentUser=userInput.value;
-login.style.display="none";
-app.style.display="flex";
-buildMenu();
-renderHome();
+/* ================= LOGIN ================= */
+function login(){
+const u=userInput.value;
+if(users[u].pass===passInput.value){
+currentUser=u;
+loginBox();
 }else alert("Password salah");
 }
 
-/* MENU */
+function loginBox(){
+login.style.display="none";
+app.classList.remove("hidden");
+ava.innerText=currentUser[0];
+uname.innerText=currentUser;
+buildMenu();
+loadHome();
+}
+
+/* ================= MENU ================= */
 function buildMenu(){
 menu.innerHTML=`
 <button onclick="show('home')">🏠 Beranda</button>
 ${users[currentUser].role==="admin"?`
-<button onclick="show('editor')">💻 Editor</button>
-<button onclick="show('tasks')">📥 Tugas</button>`:""}
+<button onclick="show('editor')">💻 Upload Materi</button>
+<button onclick="show('tasks')">📥 Tugas Masuk</button>`:""}
 <button onclick="show('submit')">📝 Kumpul Tugas</button>
-<button onclick="show('password')">🔐 Password</button>
 <button onclick="location.reload()">🚪 Keluar</button>`;
 }
 
-/* NAV */
 function show(id){
-["home","editor","submit","tasks","password"].forEach(x=>{
-const el=document.getElementById(x);
-el.classList.add("hidden");
+["home","editor","submit","tasks"].forEach(x=>{
+document.getElementById(x).classList.add("hidden");
 });
-const page=document.getElementById(id);
-page.classList.remove("hidden");
-page.classList.add("slide");
-setTimeout(()=>page.classList.remove("slide"),600);
-
-if(id==="home")renderHome();
-if(id==="tasks")renderTasks();
-if(id==="password"&&users[currentUser].role==="admin"){
-adminPass.classList.remove("hidden");
-loadUserList();
-}else adminPass.classList.add("hidden");
+document.getElementById(id).classList.remove("hidden");
+if(id==="home")loadHome();
+if(id==="tasks")loadTasks();
 }
 
-/* HOME */
-function renderHome(){
-homeList.innerHTML="";
-Object.keys(files).forEach((f,i)=>{
-const c=document.createElement("div");
-c.className="card";
-c.style.animationDelay=i*0.05+"s";
-c.innerText=f;
-c.onclick=()=>alert(files[f]);
-homeList.appendChild(c);
-});
+/* ================= MATERI ================= */
+async function uploadMateri(){
+if(users[currentUser].role!=="admin")return;
+const name=fileName.value;
+const code=codeArea.value;
+
+await supabase
+.from("materi")
+.insert({name,content:code});
+
+fileName.value="";codeArea.value="";
+loadHome();
 }
 
-/* EDITOR */
-function renderTabs(){
-tabs.innerHTML="";
-Object.keys(files).forEach(f=>{
-const t=document.createElement("div");
-t.className="tab"+(f===currentFile?" active":"");
-t.innerText=f;
-t.onclick=()=>{currentFile=f;codeArea.value=files[f];renderTabs()};
-tabs.appendChild(t);
+async function loadHome(){
+home.innerHTML="<h2>Beranda</h2>";
+const {data}=await supabase.from("materi").select();
+data.forEach(d=>{
+home.innerHTML+=`
+<div class="card">
+<b>${d.name}</b>
+<pre>${d.content}</pre>
+</div>`;
 });
 }
-function newFile(){currentFile=null;codeArea.value=""}
-function saveFile(){
-const name=currentFile||prompt("Nama File");
-if(!name)return;
-files[name]=codeArea.value;
-currentFile=name;
-saveFiles();renderTabs();renderHome();
-}
-function renameFile(){
-const n=prompt("Nama Baru");
-files[n]=files[currentFile];
-delete files[currentFile];
-currentFile=n;
-saveFiles();renderTabs();renderHome();
-}
-function deleteFile(){
-if(confirm("Hapus?")){
-delete files[currentFile];
-currentFile=null;codeArea.value="";
-saveFiles();renderTabs();renderHome();
-}
+
+/* ================= TUGAS ================= */
+async function submitTask(){
+await supabase.from("tasks").insert({
+user:currentUser,
+title:taskTitle.value,
+code:taskCode.value
+});
+alert("Tugas terkirim");
+taskTitle.value="";taskCode.value="";
 }
 
-/* TASK */
-function submitTask(){
-tasks[currentUser+"-"+taskName.value]=taskCode.value;
-saveTasks();alert("Tugas dikirim");
-taskName.value="";taskCode.value="";
-}
-function renderTasks(){
+async function loadTasks(){
 taskList.innerHTML="";
-Object.keys(tasks).forEach((t,i)=>{
-const c=document.createElement("div");
-c.className="card";
-c.style.animationDelay=i*0.05+"s";
-c.innerHTML=`<b>${t}</b><pre>${tasks[t]}</pre>`;
-taskList.appendChild(c);
+const {data}=await supabase.from("tasks").select();
+data.forEach(t=>{
+taskList.innerHTML+=`
+<div class="card">
+<b>${t.user} - ${t.title}</b>
+<pre>${t.code}</pre>
+</div>`;
 });
 }
-
-/* PASSWORD */
-function loadUserList(){
-targetUser.innerHTML="";
-Object.keys(users).forEach(u=>{
-const o=document.createElement("option");
-o.innerText=u;targetUser.appendChild(o);
-});
-}
-function changeUserPass(){
-users[targetUser.value].pass=newPassAdmin.value;
-localStorage.setItem("users",JSON.stringify(users));
-alert("Password diganti");
-}
-function changeMyPass(){
-if(oldPass.value!==users[currentUser].pass)return alert("Password lama salah");
-users[currentUser].pass=newPassSelf.value;
-localStorage.setItem("users",JSON.stringify(users));
-alert("Password berhasil diubah");
-}
-
-function saveFiles(){localStorage.setItem("files",JSON.stringify(files))}
-function saveTasks(){localStorage.setItem("tasks",JSON.stringify(tasks))}
 </script>
 
 </body>

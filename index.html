@@ -99,12 +99,14 @@ body {
   backdrop-filter: blur(12px);
   z-index: 999;
   animation: fadeIn 0.5s ease forwards;
+  padding: 1rem;
 }
 
 .login-box {
   background: var(--surface-color);
   padding: 2.5rem;
   width: 420px;
+  max-width: 100%;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   text-align: center;
@@ -182,7 +184,7 @@ body {
 }
 
 #loginError {
-  display: none; /* Hidden by default */
+  display: none;
   margin-top: 1rem;
   padding: 0.75rem;
   background-color: #fee2e2;
@@ -219,7 +221,8 @@ body {
   color: var(--text-on-primary);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
 }
 
 .sidebar.collapsed {
@@ -446,6 +449,114 @@ body {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+
+/* =================================================== */
+/*                   RESPONSIVE DESIGN                */
+/* =================================================== */
+
+/* For screens smaller than 768px (tablets and phones) */
+@media (max-width: 768px) {
+
+  /* App layout changes */
+  .app-container {
+    flex-direction: column;
+  }
+
+  /* Sidebar becomes a slide-out menu */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1001;
+    transform: translateX(-100%); /* Hide it off-screen */
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0); /* Show it */
+  }
+  
+  /* Hide the desktop collapse button on mobile */
+  .sidebar.collapsed {
+    width: 280px; /* Keep full width when open */
+    transform: translateX(-100%); /* Hide it even if 'collapsed' class is present */
+  }
+  .sidebar.collapsed.sidebar-open {
+    transform: translateX(0); /* Show it */
+  }
+
+  .sidebar.collapsed .username {
+    display: block; /* Show username */
+  }
+
+  .sidebar.collapsed .nav-menu button span {
+    display: inline; /* Show text */
+  }
+  
+  /* Main content area */
+  .main {
+    padding: 4rem 1rem 1rem 1rem; /* Add top padding for the hamburger button */
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  /* Mobile Menu Toggle (Hamburger) */
+  .mobile-menu-toggle {
+    display: block; /* Show it only on mobile */
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1002; /* Above the sidebar */
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    cursor: pointer;
+    padding: 0.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mobile-menu-toggle span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-primary);
+    margin: 5px 0;
+    transition: 0.3s;
+  }
+  
+  /* Overlay to close menu */
+  .overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+
+  .overlay.active {
+    display: block; /* Show when menu is open */
+  }
+}
+
+/* Hide the hamburger button on larger screens */
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none;
+  }
+  .overlay {
+    display: none !important;
+  }
+}
 </style>
 </head>
 
@@ -473,7 +584,7 @@ body {
       </div>
       <div class="form-group">
         <label for="password">Kata Sandi</label>
-        <input type="password" id="password" placeholder="••••••••" required>
+        <input type="password" id="password" placeholder="••••••" required>
       </div>
       <button type="submit" class="btn btn-primary" onclick="handleLogin()" id="loginBtn">Masuk</button>
       <div id="loginError"></div>
@@ -491,10 +602,10 @@ body {
         <div class="username" id="uname">User Name</div>
       </div>
       <ul class="nav-menu">
-        <li><button onclick="show('dash')"><span>Dashboard</span></button></li>
-        <li><button onclick="show('editor')"><span>Code Editor</span></button></li>
-        <li><button onclick="show('task')"><span>Kumpul Tugas</span></button></li>
-        <li><button onclick="show('review')" id="reviewBtn"><span>Review</span></button></li>
+        <li><button onclick="navigateAndClose('dash')"><span>Dashboard</span></button></li>
+        <li><button onclick="navigateAndClose('editor')"><span>Code Editor</span></button></li>
+        <li><button onclick="navigateAndClose('task')"><span>Kumpul Tugas</span></button></li>
+        <li><button onclick="navigateAndClose('review')" id="reviewBtn"><span>Review</span></button></li>
         <li><button onclick="toggle()"><span>Kecilkan</span></button></li>
         <li><button onclick="logout()"><span>Keluar</span></button></li>
       </ul>
@@ -502,6 +613,16 @@ body {
 
     <!-- MAIN CONTENT AREA -->
     <div class="main">
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <!-- Overlay -->
+      <div class="overlay" id="overlay" onclick="closeMobileMenu()"></div>
+
       <div id="dash" class="page-content">
         <div class="page-header"><h1>Dashboard</h1></div>
         <div id="dashContent"></div>
@@ -654,7 +775,12 @@ async function init() {
   }
 }
 
-function toggle() { sidebar.classList.toggle("collapsed"); }
+function toggle() { 
+    // Only toggle collapse on desktop
+    if (window.innerWidth > 768) {
+        sidebar.classList.toggle("collapsed"); 
+    }
+}
 
 function show(id) {
   document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
@@ -662,6 +788,27 @@ function show(id) {
   if (id === 'review') loadTasks();
   if (id === 'task') loadMyTasks();
 }
+
+// --- MOBILE MENU FUNCTIONS ---
+function toggleMobileMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  sidebar.classList.toggle('sidebar-open');
+  overlay.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  sidebar.classList.remove('sidebar-open');
+  overlay.classList.remove('active');
+}
+
+function navigateAndClose(pageId) {
+  show(pageId);
+  closeMobileMenu();
+}
+
 
 // --- MATERI FUNCTIONS ---
 async function saveMateri() {
